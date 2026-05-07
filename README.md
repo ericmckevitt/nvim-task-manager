@@ -1,4 +1,4 @@
-# task_manager.nvim
+# nvim-task-manager
 
 Keyboard-first task management inside Neovim with JSON-backed storage, list organization, schedule/log views, and markdown notes.
 
@@ -31,7 +31,7 @@ No external CLI tools are required.
 
 ```lua
 {
-  "ericmckevitt/task_manager.nvim",
+  "ericmckevitt/nvim-task-manager",
   main = "task_manager",
   opts = {
     file_path = vim.fn.stdpath("data") .. "/tasks.json",
