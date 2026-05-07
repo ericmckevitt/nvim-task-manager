@@ -1,53 +1,83 @@
 # task_manager.nvim
 
-A keyboard-first task manager for Neovim with JSON-backed storage and no external service requirements.
+Keyboard-first task management inside Neovim with JSON-backed storage, list organization, schedule/log views, and markdown notes.
 
-## Highlights
+## Local-Only / Offline
 
-- Local-first task management inside Neovim
-- JSON file as the source of truth
-- Multiple views (`all`, `today`, `overdue`, `log`, `schedule`, `by_tag:<tag>`, and list-scoped views)
-- Bulk actions, list switching, and task search
-- Markdown notes per task
-- Optional Telescope integration with graceful fallback
-- Runs completely locally with no network access required
+- Runs 100% locally on your machine
+- Stores data on local disk (`tasks.json` + markdown note files)
+- Requires no network access to operate
+- Uses no external web services or cloud sync
+
+## Features
+
+- JSON file as source of truth
+- Multiple views: `all`, `today`, `overdue`, `log`, `schedule`, `by_tag:<tag>`, `list:<name|id>`
+- Week navigation in schedule view (`[w`, `]w`, `gw`)
+- Global fuzzy task search (`:TaskSearch`, Telescope)
+- List management, per-list colors, and grouped global views
+- Bulk selection + bulk edits/actions
+- Markdown notes per task (`n`)
+- Optional Telescope integration with graceful fallback to `vim.ui.select`
 
 ## Requirements
 
 - Neovim
 - Optional: Telescope (`nvim-telescope/telescope.nvim`) for enhanced pickers/search
 
-No external CLI tools, cloud services, or network connectivity are required.
+No external CLI tools are required.
 
-## Installation (manual)
-
-Copy this repo into your Neovim runtime path (or plugin directory) so that:
-
-- `plugin/task_manager.lua`
-- `lua/task_manager/*.lua`
-
-are available to Neovim.
-
-## Basic Setup
-
-`plugin/task_manager.lua` auto-calls setup with defaults. You can also configure manually:
+## Installation With lazy.nvim
 
 ```lua
-require("task_manager").setup({
-  file_path = vim.fn.stdpath("data") .. "/tasks.json",
-  notes_dir = vim.fn.stdpath("data") .. "/task_manager/notes",
-  use_floating_window = false,
-  group_global_views_by_list = true,
-})
+{
+  "ericmckevitt/task_manager.nvim",
+  main = "task_manager",
+  opts = {
+    file_path = vim.fn.stdpath("data") .. "/tasks.json",
+    notes_dir = vim.fn.stdpath("data") .. "/task_manager/notes",
+  },
+  cmd = {
+    "TaskOpen",
+    "TaskAdd",
+    "TaskView",
+    "TaskSearch",
+    "TaskLists",
+    "TaskListAdd",
+    "TaskListRename",
+    "TaskListDelete",
+    "TaskListColor",
+    "TaskListColorClear",
+  },
+}
 ```
 
-## Main Commands
+## Local Development Spec (lazy.nvim)
 
-- `:TaskOpen` — open current list view
-- `:TaskAdd` — open task manager and add task
-- `:TaskView <name>` — switch view
-- `:TaskSearch` — Telescope global task search
-- `:TaskLists` — jump picker for views/lists
+```lua
+{
+  dir = "~/Desktop/Code/task_manager.nvim",
+  main = "task_manager",
+  opts = {},
+  cmd = { "TaskOpen", "TaskView", "TaskSearch" },
+}
+```
+
+## Manual Setup (without lazy.nvim)
+
+Place this repo on `runtimepath`, then call:
+
+```lua
+require("task_manager").setup({})
+```
+
+## Commands
+
+- `:TaskOpen` open current list view
+- `:TaskAdd` add a new task
+- `:TaskView <name>` switch view
+- `:TaskSearch` global task search
+- `:TaskLists` jump picker for views/lists
 - `:TaskListAdd [name]`
 - `:TaskListRename`
 - `:TaskListDelete [name_or_id]`
@@ -74,14 +104,7 @@ require("task_manager").setup({
 - `gw` reset schedule view to current week
 - `q` or `<Esc>` close task manager window
 
-## Data Model
+## Default Data Paths
 
-Tasks are stored in JSON with list support and metadata (status, tags, due/scheduled dates, priority, notes, completion timestamps).
-
-Task notes are stored as local markdown files in `notes_dir`.
-
-## Notes
-
-- The plugin is fully local and offline.
-- Done-task retention and log/schedule behavior are view-specific.
-- Works without Telescope, but Telescope provides the best search/picker UX.
+- Task JSON: `vim.fn.stdpath("data") .. "/tasks.json"`
+- Notes directory: `vim.fn.stdpath("data") .. "/task_manager/notes"`
